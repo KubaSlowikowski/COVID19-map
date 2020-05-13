@@ -28,11 +28,6 @@
 
 <div id="mapid"></div>
 
-<script src="/js/statesData.js"></script>
-<script>
-    var statesData = [[${statesData}]];
-</script>
-
 <script src="/js/countriesData.js"></script>
 <script>
     var countriesData = [[${countriesData}]];
@@ -44,108 +39,103 @@
 
     var map = L.map('mapid', {
         doubleClickZoom: false
-    }).setView([53.13, 23.16], 10);
+    }).setView([53.13, 23.16], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    points.forEach(value => {
-        L.marker([value.lat, value.lon]).addTo(map)
-            .bindPopup(value.cases)
-    });
+    // points.forEach(value => {
+    //     L.marker([value.lat, value.lon]).addTo(map)
+    //         .bindPopup(value.cases)
+    // });
 
     var circles = [[${circles}]];
 
     var myMap = new Map();
 
     circles.forEach(value => {
-        myMap.set(value.country, value.cases);
+        if (myMap.has(value.country)) {
+            var mapValue = parseInt(myMap.get(value.country));
+            myMap.delete(value.country);
+            myMap.set(value.country, mapValue + parseInt(value.cases));
+        } else {
+            myMap.set(value.country, value.cases);
+        }
     });
 
-
-    var latlngs = [
-        [ // first polygon
-            [
-                [37, -109.05],
-                [41, -109.03],
-                [41, -102.05],
-                [37, -102.04]
-            ], // outer ring
-            [
-                [37.29, -108.58],
-                [40.71, -108.58],
-                [40.71, -102.50],
-                [37.29, -102.50]
-            ] // hole
-        ],
-        [ // second polygon
-            [
-                [41, -111.03],
-                [45, -111.04],
-                [45, -104.05],
-                [41, -104.05]
-            ]
-        ]
-    ];
-    var polygon = L.polygon(latlngs, {color: 'red'}).addTo(map);
-    // zoom the map to the polygon
-    map.fitBounds(polygon.getBounds());
-
-    // create a red polygon from an array of LatLng points
-    var latlngs = [
-        [ // first polygon
-            [
-                [37, -109.05],
-                [41, -109.03],
-                [41, -102.05],
-                [37, -102.04]
-            ], // outer ring
-            [
-                [37.29, -108.58],
-                [40.71, -108.58],
-                [40.71, -102.50],
-                [37.29, -102.50]
-            ] // hole
-        ],
-        [ // second polygon
-            [
-                [41, -111.03],
-                [45, -111.04],
-                [45, -104.05],
-                [41, -104.05]
-            ]
-        ]
-    ];
-    var polygon = L.polygon(latlngs, {color: 'orange'}).addTo(map);
-    // zoom the map to the polygon
-    map.fitBounds(polygon.getBounds());
+    // var latlngs = [
+    //     [ // first polygon
+    //         [
+    //             [37, -109.05],
+    //             [41, -109.03],
+    //             [41, -102.05],
+    //             [37, -102.04]
+    //         ], // outer ring
+    //         [
+    //             [37.29, -108.58],
+    //             [40.71, -108.58],
+    //             [40.71, -102.50],
+    //             [37.29, -102.50]
+    //         ] // hole
+    //     ],
+    //     [ // second polygon
+    //         [
+    //             [41, -111.03],
+    //             [45, -111.04],
+    //             [45, -104.05],
+    //             [41, -104.05]
+    //         ]
+    //     ]
+    // ];
+    // var polygon = L.polygon(latlngs, {color: 'red'}).addTo(map);
+    // // zoom the map to the polygon
+    // map.fitBounds(polygon.getBounds());
+    //
+    // // create a red polygon from an array of LatLng points
+    // var latlngs = [
+    //     [ // first polygon
+    //         [
+    //             [37, -109.05],
+    //             [41, -109.03],
+    //             [41, -102.05],
+    //             [37, -102.04]
+    //         ], // outer ring
+    //         [
+    //             [37.29, -108.58],
+    //             [40.71, -108.58],
+    //             [40.71, -102.50],
+    //             [37.29, -102.50]
+    //         ] // hole
+    //     ],
+    //     [ // second polygon
+    //         [
+    //             [41, -111.03],
+    //             [45, -111.04],
+    //             [45, -104.05],
+    //             [41, -104.05]
+    //         ]
+    //     ]
+    // ];
+    // var polygon = L.polygon(latlngs, {color: 'orange'}).addTo(map);
+    // // zoom the map to the polygon
+    // map.fitBounds(polygon.getBounds());
 
     function getColor(d) {
-        return d > 1000000 ? '#800026' :
-            d > 500000 ? '#BD0026' :
-                d > 200000 ? '#E31A1C' :
-                    d > 100000 ? '#FC4E2A' :
-                        d > 50000 ? '#FD8D3C' :
-                            d > 20000 ? '#FEB24C' :
-                                d > 10000 ? '#FED976' :
-                                    d > 10 ? '#FFEDA0' :
-                                        '#23fc0d';
+        return d > 500000 ? '#800026' :
+            d > 200000 ? '#BD0026' :
+                d > 100000 ? '#E31A1C' :
+                    d > 50000 ? '#FC4E2A' :
+                        d > 20000 ? '#fc7536' :
+                            d > 10000 ? '#ff9345' :
+                                d > 2500 ? '#FEB24C' :
+                                    d > 200 ? '#FED976' :
+                                        d > 10 ? '#ffeda0' :
+                                            '#23fc0d';
     }
 
-    function style(feature) {
-        return {
-            fillColor: getColor(feature.properties.density),
-            weight: 2,
-            opacity: 1,
-            color: 'white',
-            dashArray: '3',
-            fillOpacity: 0.7
-        };
-    }
-
-    function styleCountry(value) {
-        var result = myMap.get(value.properties.name);
+    function styleCountry(feature) {
+        var result = myMap.get(feature.properties.name);
         if (result !== undefined) {
             return {
                 fillColor: getColor(result),
@@ -155,8 +145,7 @@
                 dashArray: '3',
                 fillOpacity: 0.7
             };
-        }
-        else {
+        } else {
             return {
                 fillColor: 'rgba(35,252,13,0)',
                 weight: 2,
@@ -168,12 +157,45 @@
         }
     }
 
-    // var geojson = L.geoJson(statesData, {style: style}).addTo(map);
-    var geojson = L.geoJson(countriesData, {style: styleCountry}).addTo(map);
+    var geojson;
+
+    function highlightFeature(e) {
+        var layer = e.target;
+
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+    }
+
+    function resetHighlight(e) {
+        geojson.resetStyle(e.target);
+    }
+
+    function zoomToFeature(e) {
+        map.fitBounds(e.target.getBounds());
+    }
+
+    function onEachFeature(feature, layer) {
+        layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: zoomToFeature
+        });
+    }
+
+    geojson = L.geoJson(countriesData, {
+        style: styleCountry,
+        onEachFeature: onEachFeature
+    }).addTo(map);
 
     circles.forEach(value => {
-        myMap.set(value.country, value.cases);
-
         random = Math.floor(Math.random() * 16777215).toString(16);
         randomColor = "#" + random;
 
