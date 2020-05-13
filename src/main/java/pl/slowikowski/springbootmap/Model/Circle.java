@@ -6,16 +6,20 @@ public class Circle extends Point {
     private double lon;
     private double radius;
     private String cases;
+    private String country;
+    private String province;
 
     public Circle(Point point) {
-        this(point.getLat(), point.getLon(), point.getCases(), 0);
+        this(point.getLat(), point.getLon(), null, 50, null, null);
     }
 
-    public Circle(final double lat, final double lon, final String cases, final double radius) {
+    public Circle(final double lat, final double lon, final String cases, final double radius, final String country, final String province) {
         this.lat = lat;
         this.lon = lon;
         this.cases = cases;
         this.radius = radius;
+        this.country = country;
+        this.province = province;
     }
 
     @Override
@@ -46,13 +50,27 @@ public class Circle extends Point {
         this.radius = radius;
     }
 
-    @Override
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(final String province) {
+        this.province = province;
+    }
+
     public String getCases() {
         return cases;
     }
 
-    @Override
     public void setCases(final String cases) {
         this.cases = cases;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(final String country) {
+        this.country = country;
     }
 }

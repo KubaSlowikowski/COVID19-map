@@ -2,7 +2,8 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>covid-19 map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COVID-19 map</title>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
           integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
@@ -16,12 +17,26 @@
         #mapid {
             height: 900px;
         }
+
+        .center {
+            text-align: center
+        }
     </style>
 
 </head>
 <body>
 
 <div id="mapid"></div>
+
+<script src="/js/statesData.js"></script>
+<script>
+    var statesData = [[${statesData}]];
+</script>
+
+<script src="/js/countriesData.js"></script>
+<script>
+    var countriesData = [[${countriesData}]];
+</script>
 
 <script th:inline="javascript">
 
@@ -42,18 +57,12 @@
 
     var circles = [[${circles}]];
 
-    circles.forEach(value => {
-        random = Math.floor(Math.random()*16777215).toString(16);
-        randomColor = "#" + random;
+    var myMap = new Map();
 
-        L.circle([value.lat, value.lon], {
-            radius: value.radius,
-            color: randomColor,
-            fill: true,
-            fillColor: randomColor
-        }
-        ).addTo(map);
+    circles.forEach(value => {
+        myMap.set(value.country, value.cases);
     });
+
 
     var latlngs = [
         [ // first polygon
@@ -112,6 +121,70 @@
     // zoom the map to the polygon
     map.fitBounds(polygon.getBounds());
 
+    function getColor(d) {
+        return d > 1000000 ? '#800026' :
+            d > 500000 ? '#BD0026' :
+                d > 200000 ? '#E31A1C' :
+                    d > 100000 ? '#FC4E2A' :
+                        d > 50000 ? '#FD8D3C' :
+                            d > 20000 ? '#FEB24C' :
+                                d > 10000 ? '#FED976' :
+                                    d > 10 ? '#FFEDA0' :
+                                        '#23fc0d';
+    }
+
+    function style(feature) {
+        return {
+            fillColor: getColor(feature.properties.density),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    }
+
+    function styleCountry(value) {
+        var result = myMap.get(value.properties.name);
+        if (result !== undefined) {
+            return {
+                fillColor: getColor(result),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+        else {
+            return {
+                fillColor: 'rgba(35,252,13,0)',
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+    }
+
+    // var geojson = L.geoJson(statesData, {style: style}).addTo(map);
+    var geojson = L.geoJson(countriesData, {style: styleCountry}).addTo(map);
+
+    circles.forEach(value => {
+        myMap.set(value.country, value.cases);
+
+        random = Math.floor(Math.random() * 16777215).toString(16);
+        randomColor = "#" + random;
+
+        L.circle([value.lat, value.lon], {
+                radius: value.radius,
+                color: randomColor,
+                fill: true,
+                fillColor: randomColor
+            }
+        ).addTo(map).bindPopup("<b class='center'>" + value.country + " " + value.province + "</b>" + "<br>Ilość zarażonych: <br>" + value.cases);
+    });
 </script>
 </body>
 </html>

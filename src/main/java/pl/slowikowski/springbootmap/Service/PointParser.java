@@ -31,6 +31,8 @@ class PointParser {
         for (CSVRecord record : parses) {
             double lat = Double.parseDouble(record.get("Lat"));
             double lon = Double.parseDouble(record.get("Long"));
+            String country = record.get("Country/Region");
+            String province = record.get("Province/State");
             String cases;
             while (true) {
                 try {
@@ -40,7 +42,8 @@ class PointParser {
                     day -= 1;
                 }
             }
-            circles.add(new Circle(lat, lon, cases, Double.parseDouble(cases)));
+            circles.add(new Circle(lat, lon, cases, Double.parseDouble(cases), country, province));
+
         }
         return circles;
     }
