@@ -4,7 +4,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
-import pl.slowikowski.springbootmap.Model.Circle;
+import pl.slowikowski.springbootmap.Model.Point;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -14,13 +14,13 @@ import java.util.List;
 
 @Service
 class PointParser {
-    protected List<Circle> parsePoints(String csvValues) {
+    protected List<Point> parsePoints(String csvValues) {
         LocalDate today = LocalDate.now();
         int month = today.getMonth().getValue();
         int day = today.getDayOfMonth();
         int year = today.getYear() - 2000;
 
-        List<Circle> circles = new ArrayList<>();
+        List<Point> points = new ArrayList<>();
         StringReader stringReader = new StringReader(csvValues);
         CSVParser parses = null;
         try {
@@ -42,9 +42,9 @@ class PointParser {
                     day -= 1;
                 }
             }
-            circles.add(new Circle(lat, lon, cases, Double.parseDouble(cases), country, province));
+            points.add(new Point(lat, lon, cases, Double.parseDouble(cases), country, province));
 
         }
-        return circles;
+        return points;
     }
 }

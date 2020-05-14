@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COVID-19 map</title>
+    <meta name="author" content="Jakub Slowikowski">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
           integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
@@ -14,14 +14,18 @@
             crossorigin=""></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css?family=Barlow');
+
         #mapid {
-            height: 500px;
-            width: 700px;
-            margin: 10% 0 0 25%;
-            border-radius: 15px;
+            height: 700px;
+            width: 80%;
+            margin-right: 10%;
+            margin-left: 10%;
             border-style: outset;
             border-color: slategray;
-
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            border-bottom-style: none;
         }
 
         .info {
@@ -52,11 +56,331 @@
             margin-right: 8px;
             opacity: 0.7;
         }
+
+        #title {
+            width: 80%;
+            height: 150px;
+            margin-right: 10%;
+            margin-left: 10%;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            border-style: outset;
+            border-color: slategray;
+        }
+
+        body {
+            background: #310404 url(https://i.ytimg.com/vi/wOvQAhzWCrM/maxresdefault.jpg) no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            font-family: 'Barlow', sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        h1.main, p.demos {
+            -webkit-animation-delay: 18s;
+            -moz-animation-delay: 18s;
+            -ms-animation-delay: 18s;
+            animation-delay: 18s;
+        }
+
+        .sp-container {
+            margin-right: 10%;
+            margin-left: 10%;
+            width: 80%;
+            height: 20%;
+
+        }
+
+        .sp-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            left: 0px;
+            top: 0px;
+            z-index: 1000;
+        }
+
+        .sp-container h2 {
+            position: absolute;
+            line-height: 100px;
+            height: 90px;
+            margin-top: 10px;
+            font-size: 90px;
+            width: 100%;
+            text-align: center;
+            color: transparent;
+            -webkit-animation: blurFadeInOut 3s ease-in backwards;
+            -moz-animation: blurFadeInOut 3s ease-in backwards;
+            -ms-animation: blurFadeInOut 3s ease-in backwards;
+            animation: blurFadeInOut 3s ease-in backwards;
+        }
+
+        .sp-container h2.frame-1 {
+            -webkit-animation-delay: 0s;
+            -moz-animation-delay: 0s;
+            -ms-animation-delay: 0s;
+            animation-delay: 0s;
+        }
+
+        .sp-container h2.frame-5 {
+            -webkit-animation: none;
+            -moz-animation: none;
+            -ms-animation: none;
+            animation: none;
+            color: transparent;
+            text-shadow: 0px 0px 1px #fff;
+        }
+
+        .sp-container h2.frame-5 span {
+            -webkit-animation: blurFadeIn 1s ease-in 3s backwards;
+            -moz-animation: blurFadeIn 1s ease-in 3s backwards;
+            -ms-animation: blurFadeIn 1s ease-in 4s backwards;
+            animation: blurFadeIn 1s ease-in 3s backwards;
+            color: transparent;
+            font-size: 60px;
+            text-shadow: 0px 0px 1px #fff;
+        }
+
+        .sp-container h2.frame-5 span:nth-child(2) {
+            -webkit-animation-delay: 6s;
+            -moz-animation-delay: 6s;
+            -ms-animation-delay: 6s;
+            animation-delay: 5s;
+        }
+
+        .sp-container h2.frame-5 span:nth-child(3) {
+            -webkit-animation-delay: 7s;
+            -moz-animation-delay: 7s;
+            -ms-animation-delay: 7s;
+            animation-delay: 7s;
+        }
+
+        .sp-globe {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin: -137px 0 0 -141px;
+            background: transparent url(http://web-sonick.zz.mu/images/sl/globe.png) no-repeat top left;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+            filter: alpha(opacity=30);
+            opacity: 0.3;
+
+        }
+
+        /**/
+
+        @-webkit-keyframes blurFadeInOut {
+            0% {
+                opacity: 0;
+                text-shadow: 0px 0px 40px #fff;
+                -webkit-transform: scale(1.3);
+            }
+            20%, 75% {
+                opacity: 1;
+                text-shadow: 0px 0px 1px #fff;
+                -webkit-transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                text-shadow: 0px 0px 50px #fff;
+                -webkit-transform: scale(0);
+            }
+        }
+
+        @-webkit-keyframes blurFadeIn {
+            0% {
+                opacity: 0;
+                text-shadow: 0px 0px 40px #fff;
+                -webkit-transform: scale(1.3);
+            }
+            50% {
+                opacity: 0.5;
+                text-shadow: 0px 0px 10px #fff;
+                -webkit-transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                text-shadow: 0px 0px 1px #fff;
+                -webkit-transform: scale(1);
+            }
+        }
+
+        @-webkit-keyframes fadeInBack {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale(0);
+            }
+            50% {
+                opacity: 0.4;
+                -webkit-transform: scale(2);
+            }
+            100% {
+                opacity: 0.2;
+                -webkit-transform: scale(5);
+            }
+        }
+
+        @-webkit-keyframes fadeInRotate {
+            0% {
+                opacity: 0;
+                -webkit-transform: scale(0) rotate(360deg);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /**/
+
+        @-moz-keyframes blurFadeInOut {
+            0% {
+                opacity: 0;
+                text-shadow: 0px 0px 40px #fff;
+                -moz-transform: scale(1.3);
+            }
+            20%, 75% {
+                opacity: 1;
+                text-shadow: 0px 0px 1px #fff;
+                -moz-transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                text-shadow: 0px 0px 50px #fff;
+                -moz-transform: scale(0);
+            }
+        }
+
+        @-moz-keyframes blurFadeIn {
+            0% {
+                opacity: 0;
+                text-shadow: 0px 0px 40px #fff;
+                -moz-transform: scale(1.3);
+            }
+            100% {
+                opacity: 1;
+                text-shadow: 0px 0px 1px #fff;
+                -moz-transform: scale(1);
+            }
+        }
+
+        @-moz-keyframes fadeInBack {
+            0% {
+                opacity: 0;
+                -moz-transform: scale(0);
+            }
+            50% {
+                opacity: 0.4;
+                -moz-transform: scale(2);
+            }
+            100% {
+                opacity: 0.2;
+                -moz-transform: scale(5);
+            }
+        }
+
+        @-moz-keyframes fadeInRotate {
+            0% {
+                opacity: 0;
+                -moz-transform: scale(0) rotate(360deg);
+            }
+            100% {
+                opacity: 1;
+                -moz-transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /**/
+
+        @keyframes blurFadeInOut {
+            0% {
+                opacity: 0;
+                text-shadow: 0px 0px 40px #fff;
+                transform: scale(1.3);
+            }
+            20%, 75% {
+                opacity: 1;
+                text-shadow: 0px 0px 1px #fff;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                text-shadow: 0px 0px 50px #fff;
+                transform: scale(0);
+            }
+        }
+
+        @keyframes blurFadeIn {
+            0% {
+                opacity: 0;
+                text-shadow: 0px 0px 40px #fff;
+                transform: scale(1.3);
+            }
+            50% {
+                opacity: 0.5;
+                text-shadow: 0px 0px 10px #fff;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                text-shadow: 0px 0px 1px #fff;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInBack {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(2);
+            }
+            100% {
+                opacity: 0.2;
+                transform: scale(5);
+            }
+        }
+
+        @keyframes fadeInRotate {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(360deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
     </style>
 
 </head>
 <body>
 
+<div id="title">
+    <div class="sp-container">
+        <div class="sp-content">
+            <h2 class="frame-1">COVID-19 map, written in:</h2>
+            <h2 class="frame-5">
+                <span>Java,</span>
+                <span>HTML+CSS,</span>
+                <span>JavaScript.</span>
+            </h2>
+        </div>
+    </div>
+</div>
 <div id="mapid"></div>
 
 <script src="/js/countriesData.js"></script>
@@ -66,8 +390,6 @@
 
 <script th:inline="javascript">
 
-    var points = [[${points}]];
-
     var map = L.map('mapid', {
         doubleClickZoom: false
     }).setView([53.13, 23.16], 4);
@@ -76,16 +398,11 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // points.forEach(value => {
-    //     L.marker([value.lat, value.lon]).addTo(map)
-    //         .bindPopup(value.cases)
-    // });
-
-    var circles = [[${circles}]];
+    var points = [[${points}]];
 
     var myMap = new Map();
 
-    circles.forEach(value => {
+    points.forEach(value => {
         if (myMap.has(value.country)) {
             var mapValue = parseInt(myMap.get(value.country));
             myMap.delete(value.country);
@@ -94,63 +411,6 @@
             myMap.set(value.country, value.cases);
         }
     });
-
-    // var latlngs = [
-    //     [ // first polygon
-    //         [
-    //             [37, -109.05],
-    //             [41, -109.03],
-    //             [41, -102.05],
-    //             [37, -102.04]
-    //         ], // outer ring
-    //         [
-    //             [37.29, -108.58],
-    //             [40.71, -108.58],
-    //             [40.71, -102.50],
-    //             [37.29, -102.50]
-    //         ] // hole
-    //     ],
-    //     [ // second polygon
-    //         [
-    //             [41, -111.03],
-    //             [45, -111.04],
-    //             [45, -104.05],
-    //             [41, -104.05]
-    //         ]
-    //     ]
-    // ];
-    // var polygon = L.polygon(latlngs, {color: 'red'}).addTo(map);
-    // // zoom the map to the polygon
-    // map.fitBounds(polygon.getBounds());
-    //
-    // // create a red polygon from an array of LatLng points
-    // var latlngs = [
-    //     [ // first polygon
-    //         [
-    //             [37, -109.05],
-    //             [41, -109.03],
-    //             [41, -102.05],
-    //             [37, -102.04]
-    //         ], // outer ring
-    //         [
-    //             [37.29, -108.58],
-    //             [40.71, -108.58],
-    //             [40.71, -102.50],
-    //             [37.29, -102.50]
-    //         ] // hole
-    //     ],
-    //     [ // second polygon
-    //         [
-    //             [41, -111.03],
-    //             [45, -111.04],
-    //             [45, -104.05],
-    //             [41, -104.05]
-    //         ]
-    //     ]
-    // ];
-    // var polygon = L.polygon(latlngs, {color: 'orange'}).addTo(map);
-    // // zoom the map to the polygon
-    // map.fitBounds(polygon.getBounds());
 
     var colorsValues = [10, 200, 2500, 10000, 20000, 50000, 100000, 200000, 500000];
 
@@ -172,11 +432,12 @@
         if (result !== undefined) {
             return {
                 fillColor: getColor(result),
-                weight: 2,
+                weight: 1.5,
                 opacity: 1,
                 color: 'white',
                 dashArray: '3',
                 fillOpacity: 0.7
+
             };
         } else {
             return {
@@ -196,7 +457,7 @@
         var layer = e.target;
 
         layer.setStyle({
-            weight: 5,
+            weight: 4,
             color: '#666',
             dashArray: '',
             fillOpacity: 0.7
@@ -266,19 +527,6 @@
     };
 
     legend.addTo(map);
-
-    // circles.forEach(value => {
-    //     random = Math.floor(Math.random() * 16777215).toString(16);
-    //     randomColor = "#" + random;
-    //
-    //     L.circle([value.lat, value.lon], {
-    //             radius: value.radius,
-    //             color: randomColor,
-    //             fill: true,
-    //             fillColor: randomColor
-    //         }
-    //     ).addTo(map).bindPopup("<b class='center'>" + value.country + " " + value.province + "</b>" + "<br>Ilość zarażonych: <br>" + value.cases);
-    // });
 </script>
 </body>
 </html>
