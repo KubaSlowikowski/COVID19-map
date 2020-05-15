@@ -16,19 +16,55 @@
     <style>
         @import url('https://fonts.googleapis.com/css?family=Barlow');
 
+        #title {
+            width: 80%;
+            height: 150px;
+            margin-right: 10%;
+            margin-left: 10%;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            border-style: outset;
+            border-color: slategray;
+            position: relative;
+        }
+
+        .info {
+            width: 80%;
+            height: auto;
+            margin-right: 10%;
+            margin-left: 10%;
+            border-style: outset;
+            border-color: slategray;
+            background: rgba(255, 255, 255, 0.28);
+            text-align: right;
+        }
+
+        .inside {
+            width: auto;
+            height: auto;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 20px 12px;
+            display: inline-block;
+            bottom: 0;
+            border: slategray;
+            border-style: groove;
+            font: 20px/20px Barlow, sans-serif;
+            font-size: 50px;
+            color: white;
+        }
+
         #mapid {
-            height: 700px;
+            height: 500px;
             width: 80%;
             margin-right: 10%;
             margin-left: 10%;
             border-style: outset;
             border-color: slategray;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
             border-bottom-style: none;
         }
 
-        .info {
+        .mapinfo {
             padding: 10px 12px;
             font: 18px/20px Arial, Helvetica, sans-serif;
             background: white;
@@ -38,7 +74,7 @@
             text-align: right;
         }
 
-        .info h4 {
+        .mapinfo h4 {
             margin: 0 0 5px;
             color: #777;
         }
@@ -57,16 +93,49 @@
             opacity: 0.7;
         }
 
-        #title {
+        .panel {
             width: 80%;
             height: 150px;
             margin-right: 10%;
             margin-left: 10%;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
             border-style: outset;
             border-color: slategray;
+            position: relative;
         }
+
+        .date {
+            padding: 10px 12px;
+            font: 24px/26px Barlow, Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 9px;
+            border-style: groove;
+            width: min-content;
+            height: min-content;
+            position: absolute;
+            bottom: 25%;
+            left: 45%;
+
+        }
+
+        .dateButton {
+            padding: 10px 12px;
+            font: 24px/26px Barlow, Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 9px;
+            border-style: groove;
+            width: min-content;
+            height: min-content;
+            position: absolute;
+            bottom: 0;
+
+        }
+
 
         body {
             background: #310404 url(https://i.ytimg.com/vi/wOvQAhzWCrM/maxresdefault.jpg) no-repeat center center fixed;
@@ -381,7 +450,20 @@
         </div>
     </div>
 </div>
-<div id="mapid"></div>
+
+<div class="info">
+    <p class="inside" th:text="|Dane na dzień: ${date}|"></p>
+</div>
+
+<div id="mapid">
+</div>
+<div class="panel">
+    <form action="#" method="get" , th:action="@{/}">
+        <input class="date" name="date" type="date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
+        <button class="dateButton" type="submit">Submit></button>
+    </form>
+</div>
+
 
 <script src="/js/countriesData.js"></script>
 <script>
@@ -434,7 +516,7 @@
                 fillColor: getColor(result),
                 weight: 1.5,
                 opacity: 1,
-                color: 'white',
+                color: 'gray',
                 dashArray: '3',
                 fillOpacity: 0.7
 
@@ -444,7 +526,7 @@
                 fillColor: 'rgba(35,252,13,0)',
                 weight: 2,
                 opacity: 1,
-                color: 'white',
+                color: 'gray',
                 dashArray: '3',
                 fillOpacity: 0.7
             };
@@ -494,7 +576,7 @@
     var info = L.control();
 
     info.onAdd = function () {
-        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+        this._div = L.DomUtil.create('div', 'mapinfo'); // create a div with a class "info"
         this.update();
         return this._div;
     };
@@ -512,7 +594,7 @@
 
     legend.onAdd = function (map) {
 
-        var div = L.DomUtil.create('div', 'info legend'),
+        var div = L.DomUtil.create('div', 'mapinfo legend'),
             grades = [0, colorsValues[0], colorsValues[1], colorsValues[2], colorsValues[3], colorsValues[4], colorsValues[5], colorsValues[6]],
             labels = [];
 

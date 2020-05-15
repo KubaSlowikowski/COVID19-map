@@ -4,18 +4,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pl.slowikowski.springbootmap.Model.Point;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class CovidParser {
 
     private static final String url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv";
+    private static String values;
 
-    public List<Point> getCovidData() {
+    CovidParser() {
+        values = getCovidData();
+    }
+
+
+
+    private static String getCovidData() {
         RestTemplate restTemplate = new RestTemplate();
-        String values = restTemplate.getForObject(url, String.class);
-        PointParser pointParser = new PointParser();
+        return restTemplate.getForObject(url, String.class);
+    }
 
-        return pointParser.parsePoints(values);
+    public List<Point> getDataForDay(LocalDate date) {
+        PointParser pointParser = new PointParser();
+        return pointParser.parsePoints(values, date);
     }
 }

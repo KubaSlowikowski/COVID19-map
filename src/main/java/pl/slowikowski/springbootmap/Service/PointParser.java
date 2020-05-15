@@ -14,11 +14,10 @@ import java.util.List;
 
 @Service
 class PointParser {
-    protected List<Point> parsePoints(String csvValues) {
-        LocalDate today = LocalDate.now();
-        int month = today.getMonth().getValue();
-        int day = today.getDayOfMonth();
-        int year = today.getYear() - 2000;
+    protected List<Point> parsePoints(String csvValues, LocalDate date) {
+        int month = date.getMonth().getValue();
+        int day = date.getDayOfMonth();
+        int year = date.getYear() - 2000;
 
         List<Point> points = new ArrayList<>();
         StringReader stringReader = new StringReader(csvValues);
