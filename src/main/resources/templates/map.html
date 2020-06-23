@@ -35,7 +35,18 @@
             margin-left: 10%;
             border-style: outset;
             border-color: slategray;
-            background: rgba(255, 255, 255, 0.28);
+            background: rgba(7, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .info2 {
+            width: 80%;
+            height: auto;
+            margin-right: 10%;
+            margin-left: 10%;
+            border-style: outset;
+            border-color: slategray;
+            background: rgba(7, 0, 0, 0.4);
             text-align: right;
         }
 
@@ -47,10 +58,21 @@
             padding: 20px 12px;
             display: inline-block;
             bottom: 0;
-            border: slategray;
-            border-style: groove;
             font: 20px/20px Barlow, sans-serif;
             font-size: 50px;
+            color: white;
+        }
+
+        .inside2 {
+            width: auto;
+            height: auto;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 20px 12px;
+            display: inline-block;
+            bottom: 0;
+            font: 20px/20px Barlow, sans-serif;
+            font-size: 35px;
             color: white;
         }
 
@@ -451,164 +473,196 @@
     </div>
 </div>
 
-<div class="info">
-    <p class="inside" th:text="|Dane na dzień: ${date}|"></p>
+<div class="info" th:if="${dataType != null}">
+    <p class="inside" th:text="|Map with ${dataType} cases:|"></p>
+</div>
+<div class="info2">
+    <p class="inside2" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+    <p class="inside2" th:unless="${errorMessage!=null}"
+       th:text="|Dane na dzień: ${#temporals.format(date, 'yyyy-MM-dd')}|"></p>
 </div>
 
 <div id="mapid">
 </div>
 <div class="panel">
-    <form action="#" method="get" , th:action="@{/}">
+    <form action="#" method="get" th:action="@{/}">
         <input class="date" name="date" type="date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
-        <button class="dateButton" type="submit">Submit></button>
+        <label for="DataType">Data type:</label>
+
+        <select name="dataType" value="recovered" id="DataType">
+            <option value="confirmed">Confirmed</option>
+            <option value="recovered">Recovered</option>
+            <option value="deaths">Deaths</option>
+        </select>
+        <button class="dateButton" type="submit">Submit</button>
     </form>
 </div>
 
-
 <script src="/js/countriesData.js"></script>
 <script>
-    var countriesData = [[${countriesData}]];
+    var countriesData = [[${countriesData}]]; //borders data
 </script>
 
 <script th:inline="javascript">
+    {
+        var map = L.map('mapid', {
+            doubleClickZoom: false
+        }).setView([53.13, 23.16], 4);
 
-    var map = L.map('mapid', {
-        doubleClickZoom: false
-    }).setView([53.13, 23.16], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+        var points = [[${points}]];
 
-    var points = [[${points}]];
+        var myMap = new Map();
 
-    var myMap = new Map();
-
-    points.forEach(value => {
-        if (myMap.has(value.country)) {
-            var mapValue = parseInt(myMap.get(value.country));
-            myMap.delete(value.country);
-            myMap.set(value.country, mapValue + parseInt(value.cases));
-        } else {
-            myMap.set(value.country, value.cases);
-        }
-    });
-
-    var colorsValues = [10, 200, 2500, 10000, 20000, 50000, 100000, 200000, 500000];
-
-    function getColor(d) {
-        return d > colorsValues[8] ? '#800026' :
-            d > colorsValues[7] ? '#BD0026' :
-                d > colorsValues[6] ? '#E31A1C' :
-                    d > colorsValues[5] ? '#FC4E2A' :
-                        d > colorsValues[4] ? '#fc7536' :
-                            d > colorsValues[3] ? '#ff9345' :
-                                d > colorsValues[2] ? '#FEB24C' :
-                                    d > colorsValues[1] ? '#FED976' :
-                                        d > colorsValues[0] ? '#ffeda0' :
-                                            'rgba(255,255,255,0)';
-    }
-
-    function styleCountry(feature) {
-        var result = myMap.get(feature.properties.name);
-        if (result !== undefined) {
-            return {
-                fillColor: getColor(result),
-                weight: 1.5,
-                opacity: 1,
-                color: 'gray',
-                dashArray: '3',
-                fillOpacity: 0.7
-
-            };
-        } else {
-            return {
-                fillColor: 'rgba(35,252,13,0)',
-                weight: 2,
-                opacity: 1,
-                color: 'gray',
-                dashArray: '3',
-                fillOpacity: 0.7
-            };
-        }
-    }
-
-    var geojson;
-
-    function highlightFeature(e) {
-        var layer = e.target;
-
-        layer.setStyle({
-            weight: 4,
-            color: '#666',
-            dashArray: '',
-            fillOpacity: 0.7
+        points.forEach(value => {
+            if (myMap.has(value.country)) {
+                var mapValue = parseInt(myMap.get(value.country));
+                myMap.delete(value.country);
+                myMap.set(value.country, mapValue + parseInt(value.cases));
+            } else {
+                myMap.set(value.country, value.cases);
+            }
         });
 
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-        }
-        info.update(layer.feature.properties);
-    }
+        var colorsValues = [10, 200, 2500, 10000, 20000, 50000, 100000, 200000, 500000];
 
-    function resetHighlight(e) {
-        geojson.resetStyle(e.target);
-        info.update();
-    }
-
-    function zoomToFeature(e) {
-        map.fitBounds(e.target.getBounds());
-    }
-
-    function onEachFeature(feature, layer) {
-        layer.on({
-            mouseover: highlightFeature,
-            mouseout: resetHighlight,
-            click: zoomToFeature
-        });
-    }
-
-    geojson = L.geoJson(countriesData, {
-        style: styleCountry,
-        onEachFeature: onEachFeature
-    }).addTo(map);
-
-    var info = L.control();
-
-    info.onAdd = function () {
-        this._div = L.DomUtil.create('div', 'mapinfo'); // create a div with a class "info"
-        this.update();
-        return this._div;
-    };
-
-    // method that we will use to update the control based on feature properties passed
-    info.update = function (props) {
-        this._div.innerHTML = '<h4>COVID-19 cases</h4>' + (props ?
-            '<b>' + props.name + '</b><br />' + myMap.get(props.name) + ' people'
-            : 'Hover over a country');
-    };
-
-    info.addTo(map);
-
-    var legend = L.control({position: 'bottomright'});
-
-    legend.onAdd = function (map) {
-
-        var div = L.DomUtil.create('div', 'mapinfo legend'),
-            grades = [0, colorsValues[0], colorsValues[1], colorsValues[2], colorsValues[3], colorsValues[4], colorsValues[5], colorsValues[6]],
-            labels = [];
-
-        // loop through our density intervals and generate a label with a colored square for each interval
-        for (var i = 0; i < grades.length; i++) {
-            div.innerHTML +=
-                '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        function getColor(d) {
+            return d > colorsValues[8] ? '#800026' :
+                d > colorsValues[7] ? '#BD0026' :
+                    d > colorsValues[6] ? '#E31A1C' :
+                        d > colorsValues[5] ? '#FC4E2A' :
+                            d > colorsValues[4] ? '#fc7536' :
+                                d > colorsValues[3] ? '#ff9345' :
+                                    d > colorsValues[2] ? '#FEB24C' :
+                                        d > colorsValues[1] ? '#FED976' :
+                                            d > colorsValues[0] ? '#ffeda0' :
+                                                'rgba(255,255,255,0)';
         }
 
-        return div;
-    };
+        function styleCountry(feature) {
+            var result = myMap.get(feature.properties.name);
+            if (result !== undefined) {
+                return {
+                    fillColor: getColor(result),
+                    weight: 1.5,
+                    opacity: 1,
+                    color: 'gray',
+                    dashArray: '3',
+                    fillOpacity: 0.7
 
-    legend.addTo(map);
+                };
+            } else {
+                return {
+                    fillColor: 'rgba(35,252,13,0)',
+                    weight: 2,
+                    opacity: 1,
+                    color: 'gray',
+                    dashArray: '3',
+                    fillOpacity: 0.7
+                };
+            }
+        }
+
+        var geojson;
+
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+                weight: 4,
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            info.update(layer.feature.properties);
+        }
+
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+            info.update();
+        }
+
+        function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
+        }
+
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: zoomToFeature
+            });
+        }
+
+        geojson = L.geoJson(countriesData, {
+            style: styleCountry,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+
+        var info = L.control();
+
+        info.onAdd = function () {
+            this._div = L.DomUtil.create('div', 'mapinfo'); // create a div with a class "info"
+            this.update();
+            return this._div;
+        };
+
+        // method that we will use to update the control based on feature properties passed
+        info.update = function (props) {
+            this._div.innerHTML = (props ?
+                '<b>' + props.name + '</b><br />' + myMap.get(props.name) + ' people'
+                : 'Hover over a country');
+        };
+
+        info.addTo(map);
+
+        var legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'mapinfo legend'),
+                grades = [0, colorsValues[0], colorsValues[1], colorsValues[2], colorsValues[3], colorsValues[4], colorsValues[5], colorsValues[6], colorsValues[7], colorsValues[8]],
+                labels = [];
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            for (var i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                    grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            }
+
+            return div;
+        };
+
+        legend.addTo(map);
+    }
+
+    function loadMapData() {
+        const tableBody = document.getElementById('tableData');
+        let dataHtml = '';
+
+        for (var country in myMap) {
+            var mapKey = country;//This is the map's key.
+            var mapValue = myMap[mapKey];
+            //dataHtml += '';
+
+        }
+
+
+    }
+
+    window.onload = () => {
+        loadMapaData();
+    }
+
+
 </script>
 </body>
 </html>
