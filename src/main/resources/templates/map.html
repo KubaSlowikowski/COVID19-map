@@ -117,17 +117,35 @@
 
         .panel {
             width: 80%;
-            height: 150px;
+            height: auto;
             margin-right: 10%;
             margin-left: 10%;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
             border-style: outset;
             border-color: slategray;
             position: relative;
         }
 
+        td {
+            height: 30px;
+            border-radius: 10px;
+            border-style: solid;
+            border-color: chartreuse;
+            position: relative;
+            text-align: center;
+            font: 20px/20px Barlow, sans-serif;
+            font-size: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.65);
+        }
+
         .date {
+            margin: 5px;
             padding: 10px 12px;
             font: 24px/26px Barlow, Arial, Helvetica, sans-serif;
             background: white;
@@ -138,12 +156,13 @@
             width: min-content;
             height: min-content;
             position: absolute;
-            bottom: 25%;
-            left: 45%;
+            top: 0%;
+            right: 0%;
 
         }
 
         .dateButton {
+            margin: 5px;
             padding: 10px 12px;
             font: 24px/26px Barlow, Arial, Helvetica, sans-serif;
             background: white;
@@ -151,13 +170,36 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             border-radius: 9px;
             border-style: groove;
-            width: min-content;
+            width: max-content;
             height: min-content;
-            position: absolute;
             bottom: 0;
-
         }
 
+        .dateButton:hover {
+            background-color: rgba(0, 0, 0, 0.65);
+            color: white;
+        }
+
+        .submitButton {
+            margin: 5px;
+            padding: 10px;
+            font: 24px/26px Barlow, Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 9px;
+            border-style: groove;
+            width: max-content;
+            height: max-content;
+            position: absolute;
+            bottom: 0%;
+            right: 0%;
+        }
+
+        .submitButton:hover {
+            background-color: rgba(0, 0, 0, 0.65);
+            color: white;
+        }
 
         body {
             background: #310404 url(https://i.ytimg.com/vi/wOvQAhzWCrM/maxresdefault.jpg) no-repeat center center fixed;
@@ -459,7 +501,6 @@
 
 </head>
 <body>
-
 <div id="title">
     <div class="sp-container">
         <div class="sp-content">
@@ -487,16 +528,22 @@
 <div class="panel">
     <form action="#" method="get" th:action="@{/}">
         <input class="date" name="date" type="date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}">
-        <label for="DataType">Data type:</label>
+        <label class="dateButton" for="DataType">Data type:</label>
 
-        <select name="dataType" value="recovered" id="DataType">
+        <select class="dateButton" name="dataType" value="recovered" id="DataType">
             <option value="confirmed">Confirmed</option>
             <option value="recovered">Recovered</option>
             <option value="deaths">Deaths</option>
         </select>
-        <button class="dateButton" type="submit">Submit</button>
+        <button class="submitButton" type="submit">Submit!</button>
     </form>
+    <button class="dateButton" onclick="showTable()">Show table!</button>
+    <button class="dateButton" onclick="hideTable()">Hide table!</button>
 </div>
+<table class="panel" id="myTable">
+    <tr id="myTr">
+    </tr>
+</table>
 
 <script src="/js/countriesData.js"></script>
 <script>
@@ -644,24 +691,48 @@
         legend.addTo(map);
     }
 
-    function loadMapData() {
-        const tableBody = document.getElementById('tableData');
-        let dataHtml = '';
+    // window.onload = () => {
+    //     loadMapData();
+    // }
 
-        for (var country in myMap) {
-            var mapKey = country;//This is the map's key.
-            var mapValue = myMap[mapKey];
-            //dataHtml += '';
+    function showTable() {
+//         const tableBody = document.getElementById("myTable");
+//         let dataHtml = '';
+// //        var t = tableBody.innerHTML;
+//
+//         for (let country in myMap) {
+//             var mapKey = country;//This is the map's key.
+//             var mapValue = myMap[contry];
+//
+//             dataHtml += '<tr><td>${mapKey}</td><td>${mapValue}</td></tr>';
+//             console.log(dataHtml);
+//         }
+//         tableBody.innerHTML = dataHtml;
+//         tableBody.insertRow();
 
+        var table = document.getElementById("myTable");
+        var row = table.insertRow(0);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        cell1.innerHTML = 'COUNTRY:';
+        cell2.innerHTML = 'CASES:';
+
+        myMap.forEach((country, value) => {
+            var row = table.insertRow(1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = value;
+            cell2.innerHTML = country;
+        });
+    }
+
+    function hideTable() {
+        var table = document.getElementById("myTable");
+        var i;
+        for (i = 0; i <= myMap.size; i++) {
+            table.deleteRow(0);
         }
-
-
     }
-
-    window.onload = () => {
-        loadMapaData();
-    }
-
 
 </script>
 </body>
